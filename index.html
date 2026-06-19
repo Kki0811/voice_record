@@ -40,19 +40,20 @@
             
             <div class="quiz-btns">
                 <button class="main-btn btn-audio" onclick="playCurrentAudio()">🎤 목소리 다시 듣기</button>
+                
                 <button class="main-btn btn-hint" id="hint-btn" onclick="showHint()">👀 정답 확인하기</button>
                 
-                <div id="ox-area" class="row-btns" style="display: none; flex-direction: column; gap: 10px;">
+                <div id="ox-area" style="display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
                     <div id="word-target" class="word-display">Word</div>
                     <div id="hint-target" class="hint-text">뜻</div>
                     
-                    <div class="row-btns">
-                        <button class="main-btn btn-correct" id="btn-ox-correct" onclick="selectScore(true)">⭕ 맞았어요!</button>
-                        <button class="main-btn btn-wrong" id="btn-ox-wrong" onclick="selectScore(false)">❌ 틀렸어요</button>
+                    <div class="row-btns" style="width: 100%;">
+                        <button class="main-btn btn-correct" id="btn-ox-correct" onclick="selectScore(true)" style="margin: 0;">⭕ 맞았어요!</button>
+                        <button class="main-btn btn-wrong" id="btn-ox-wrong" onclick="selectScore(false)" style="margin: 0;">❌ 틀렸어요</button>
                     </div>
-                    
-                    <button class="main-btn btn-next" id="next-btn" onclick="commitAndNext()" disabled style="margin-top: 15px;">다음 문제로 ➡️</button>
                 </div>
+                
+                <button class="main-btn btn-next" id="next-btn" onclick="commitAndNext()" disabled style="display: none; margin-top: 15px;">다음 문제로 ➡️</button>
             </div>
         </div>
 
