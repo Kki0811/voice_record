@@ -6,6 +6,9 @@ let currentRoundOriginalWords = [];
 let customSelectedIds = [];
 let hintTimer;
 
+// 현재 문제에서 사용자가 임시로 선택한 정오답 상태를 기억하는 변수
+let currentSelection = null; 
+
 let mediaRecorder;
 let audioChunks = [];
 let currentBase64Audio = "";
@@ -184,7 +187,7 @@ function startWrongQuiz() {
     showQuestion();
 }
 
-// 문제 출제 (3초 잠금 장치 탑재)
+// 문제 출제 (3초 잠금 장치 및 선택 상태 초기화)
 function showQuestion() {
     let currentWord = testQueue[currentIdx];
     
@@ -194,7 +197,18 @@ function showQuestion() {
     
     document.getElementById('hint-target').style.display = 'none';
     document.getElementById('ox-area').style.display = 'none';
-    document.getElementById('next-btn').style.display = 'none';
+    
+    // 상태값 변수 및 다음 버튼 비활성화 초기화
+    currentSelection = null;
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.disabled = true;
+    nextBtn.innerText = "다음 문제로 ➡️";
+
+    // OX 버튼 선택 디자인 초기화
+    document.getElementById('btn-ox-correct').style.border = "none";
+    document.getElementById('btn-ox-wrong').style.border = "none";
+    document.getElementById('btn-ox-correct').style.opacity = "1";
+    document.getElementById('btn-ox-wrong').style.opacity = "1";
 
     const hintBtn = document.getElementById('hint-btn');
     hintBtn.style.display = 'block';
@@ -218,31 +232,58 @@ function showHint() {
     document.getElementById('ox-area').style.display = 'flex';
 }
 
-// 정답 기록 및 누적 스탯 저장
-async function handleResult(isCorrect) {
+// O / X 버튼 선택 시 임시 보관 및 디자인 변경
+function selectScore(isCorrect) {
+    currentSelection = isCorrect; 
+    
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.disabled = false; // 다음 버튼 언락
+    
+    const correctBtn = document.getElementById('btn-ox-correct');
+    const wrongBtn = document.getElementById('btn-ox-wrong');
+    
+    if (isCorrect) {
+        correctBtn.style.opacity = "1";
+        correctBtn.style.border = "3px solid #1E293B"; 
+        wrongBtn.style.opacity = "0.4"; 
+        wrongBtn.style.border = "none";
+        nextBtn.innerText = "⭕ 맞음 반영하고 다음으로 ➡️";
+    } else {
+        wrongBtn.style.opacity = "1";
+        wrongBtn.style.border = "3px solid #1E293B";
+        correctBtn.style.opacity = "0.4";
+        correctBtn.style.border = "none";
+        nextBtn.innerText = "❌ 틀림 반영하고 다음으로 ➡️";
+    }
+}
+
+// [다음 문제로] 버튼 클릭 시 확정 저장 후 이동
+async function commitAndNext() {
+    if (currentSelection === null) return; 
+
     let currentWord = testQueue[currentIdx];
     let targetIdx = dbWords.findIndex(w => w.id === currentWord.id);
     
+    // 최종 확인 상태에서만 LocalForage 스탯을 올림
     if (targetIdx !== -1) {
         if (!dbWords[targetIdx].totalCount) dbWords[targetIdx].totalCount = 0;
         if (!dbWords[targetIdx].wrongCount) dbWords[targetIdx].wrongCount = 0;
 
         dbWords[targetIdx].totalCount += 1;
-        if (!isCorrect) dbWords[targetIdx].wrongCount += 1;
+        if (currentSelection === false) {
+            dbWords[targetIdx].wrongCount += 1;
+        }
         await localforage.setItem('wordbook', dbWords);
     }
 
-    if (!isCorrect) {
+    // 이번 라운드 오답 목록 세팅
+    if (currentSelection === false) {
         if (!wrongWordsThisRound.some(w => w.id === currentWord.id)) {
             wrongWordsThisRound.push(currentWord);
         }
     }
 
-    document.getElementById('ox-area').style.display = 'none';
-    document.getElementById('next-btn').style.display = 'block';
-}
-
-function nextQuestion() {
+    // 다음 분기로 처리
     currentIdx++;
     if (currentIdx < testQueue.length) {
         showQuestion();
