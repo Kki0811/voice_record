@@ -47,13 +47,13 @@
                     <div id="word-target" class="word-display">Word</div>
                     <div id="hint-target" class="hint-text">뜻</div>
                     
-                    <div class="row-btns" style="width: 100%;">
-                        <button class="main-btn btn-correct" id="btn-ox-correct" onclick="selectScore(true)" style="margin: 0;">⭕ 맞았어요!</button>
-                        <button class="main-btn btn-wrong" id="btn-ox-wrong" onclick="selectScore(false)" style="margin: 0;">❌ 틀렸어요</button>
+                    <div class="row-btns" style="width: 100%; gap: 10px;">
+                        <button class="main-btn btn-correct" id="btn-ox-correct" onclick="selectScore(true)" style="margin: 0; flex: 1;">⭕ 맞았어요!</button>
+                        <button class="main-btn btn-wrong" id="btn-ox-wrong" onclick="selectScore(false)" style="margin: 0; flex: 1;">❌ 틀렸어요</button>
                     </div>
+
+                    <button class="main-btn btn-next" id="next-btn" onclick="commitAndNext()" disabled style="margin-top: 20px; width: 100%;">다음 문제로 ➡️</button>
                 </div>
-                
-                <button class="main-btn btn-next" id="next-btn" onclick="commitAndNext()" disabled style="display: none; margin-top: 15px;">다음 문제로 ➡️</button>
             </div>
         </div>
 
